@@ -1,10 +1,11 @@
 import java.util.Scanner;
 
+import javax.lang.model.util.ElementScanner6;
+
 public class App {
     public static void main(String[] args) throws Exception {
 
         Scanner scanner = new Scanner(System.in);
-
         int randomNumber = (int) (Math.random() * 101);  
 
         int chances = 5;
@@ -37,9 +38,15 @@ public class App {
 
                 System.out.println("Pozostało prób "+ (chances-currentChance-1));
             }
-
             currentChance++;
+            
         }
+
+        if(currentChance==chances)
+        {
+            System.out.println("Niestety nie zgadłeś");
+        }
+        
         scanner.close();
     }
 }
