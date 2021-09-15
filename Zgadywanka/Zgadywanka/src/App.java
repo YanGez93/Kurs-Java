@@ -34,7 +34,11 @@ public class App {
                 {
                     System.out.println(" większa"); 
                 }
+
+                System.out.println("Pozostało prób "+ (chances-currentChance-1));
             }
+
+            currentChance++;
         }
         scanner.close();
     }
