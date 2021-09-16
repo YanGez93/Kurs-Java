@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sample page</title>
+  <style>
+    *{
+      box-sizing: border-box;
+    }
+    html{
+      width:100%;
+      height: 100%;
+    }
+    body{
+      margin:0;
+      width:100%;
+      min-height:100%;
+      padding:5%;
+      display:flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: rgb(243, 211, 169);
+    }
+    .form,.posts{
+      display:flex;
+      flex-direction: column;
+      width:60vw;
+    }
+    .field{
+      text-decoration:none;
+      color:#000;
+      width:100%;
+      padding:5%;
+      margin-bottom:10px;
+      background-color:rgb(209, 209, 209);
+      box-shadow: 2px 2px 2px #fff;
+      cursor:pointer;
+      margin:25px;
+    }
+    h3{
+      margin:0;
+    }
+    textarea,#textField{
+      padding:2%;
+    }
+    .backer{
+      display:none;
+      cursor:pointer;
+      padding:5%;
+    }
+  </style>
+</head>
+<body>
+  <div class="backer" onclick="window.location.reload();">WRÓĆ DO PRZEGLĄDANIA POSTÓW</div>
+  <div class="posts"></div>
+  <div class="form">
+    <input type="text" id="textField" placeholder="Tytuł">
+    <textarea id="content"></textarea>
+    <button onclick="postCtrl.addPOST()">DODAJ POST</button>
+  </div>
+  <script>
+    let postCtrl = {
+      addPOST(){
+        let value = document.querySelector("#content").value;
+        let txtvalue = document.querySelector("#textField").value;
+        fetch("/addPost?content="+value+"&title="+txtvalue)
+        .then((dt) => dt.json())
+        .then((data) => {
+          document.querySelector("#content").value = "";
+          document.querySelector("#textField").value = "";
+          this.generatePosts(data);
+        })
+      },
+      getPOST(id){
+        fetch("/getPost?id="+id)
+        .then((dt) => dt.json())
+        .then((data) => {
+          
+          
+          document.querySelector(".backer").style.display = "block";
+          postCtrl.generatePosts([data])
+          
+
+        })
+      },
+      delPOST(id){
+        fetch("/delPost?id="+id)
+        .then((dt) => dt.json())
+        .then((data) => {
+          document.querySelector(".backer").style.display = "none";
+          document.querySelector("#content").value = "";
+          document.querySelector("#textField").value = "";
+           this.generatePosts(data);
+        })
+      },
+      loadPosts(){
+        fetch("/loadPosts")
+        .then(dt => dt.json())
+        .then(data => {
+          document.querySelector(".backer").style.display = "none";
+          this.generatePosts(data);
+        })
+      },
+      generatePosts(data){
+        let posts = document.querySelector(".posts");
+        posts.innerHTML = "";
+
+        for(let i of data){
+          let field = document.createElement("div");
+          field.className = "field";
+          field.style.position = "relative";
+          field.style.zIndex = 1;
+          document.querySelector(".posts").appendChild(field);
+
+          let h3 = document.createElement("h3");
+          h3.innerHTML = i.title;
+          h3.onclick = () => {this.getPOST(i.id)};
+
+          field.appendChild(h3);
+
+          let del = document.createElement("div");
+          del.innerHTML = "usuń";
+          del.onclick = () => {this.delPOST(i.id);}
+          del.style.cssText = `
+            position:absolute;
+            height:30px;
+            top:5px;
+            right:5px;
+            border:2px solid #fff;
+            padding:5px 10px;
+            background-color:red;
+            color:#fff;
+            border-radius:5px;
+            z-index:2;
+          `;
+          field.appendChild(del);
+
+
+          let cont = document.createElement("div");
+
+          let conText = i.content;
+          if(i.content.length > 20){
+            conText =  i.content.substring(0,20)+"... [Czytaj więcej]";
+          }
+          cont.innerHTML = conText;
+          
+          cont.className = "content";
+          field.appendChild(cont);    
+        }
+      }
+    }
+    postCtrl.loadPosts();
+  </script>
+</body>
+</html>
