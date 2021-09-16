@@ -18,24 +18,27 @@ public class Controller {
         
         //Make player or get him
         boolean isPlayer = false;
-        Player thisPlayer;
+        Player thisPlayer ;//= new Player(playerName);
 
         for(Player p: creatures)
         {
             if(p.name.equals(playerName) ) 
             {
                 thisPlayer=p;
+                thisPlayer.update(controls);
                 isPlayer=true;
             }  
         }
 
+        
         if(!isPlayer)
         {
             thisPlayer = new Player(playerName);
             creatures.add(thisPlayer);
         }
         
-
+        
+        
         
 
         String result = "{";
@@ -50,7 +53,7 @@ public class Controller {
             {
                 result+=",";
             }
-            result+= p.getValues(controls,playerName);
+            result+= p.getValues();
             i++;
         }
         
