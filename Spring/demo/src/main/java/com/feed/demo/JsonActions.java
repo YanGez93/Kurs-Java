@@ -8,7 +8,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 public class JsonActions {
 
     static ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-
+    static File jsonFile = new File("src/main/resources/static/data.json");
+    
     public static Post[] addPost(String title, String content) throws IOException
     {
         Post[] oldPosts = objectMapper.readValue(new File("src/main/resources/static/data.json"), Post[].class);
@@ -19,7 +20,7 @@ public class JsonActions {
 
         for(int i= 0;i<oldPosts.length ;i++)
         { 
-            maxVal = Math.max(i, maxVal); 
+            maxVal = Math.max(oldPosts[i].id, maxVal); 
 
             newPosts[i]=oldPosts[i];
         }
@@ -28,13 +29,13 @@ public class JsonActions {
 
         newPosts[oldPosts.length] = new Post(newId, title, content);
 
-        objectMapper.writeValue(new File("src/main/resources/static/data.json"), newPosts);
+        objectMapper.writeValue(jsonFile, newPosts);
         return newPosts;
     }
     
     public static Post getPost(int id) throws IOException
     {
-        Post[] posts = objectMapper.readValue(new File("src/main/resources/static/data.json"), Post[].class);
+        Post[] posts = objectMapper.readValue(jsonFile, Post[].class);
         Post result;
 
         for(int i= 0;i<posts.length ;i++)
@@ -52,7 +53,7 @@ public class JsonActions {
   
     public static Post[] delPost(int id) throws IOException
     {
-        Post[] oldPosts = objectMapper.readValue(new File("src/main/resources/static/data.json"), Post[].class);
+        Post[] oldPosts = objectMapper.readValue(jsonFile, Post[].class);
 
         Post[] newPosts = new Post[oldPosts.length-1];
 
@@ -68,8 +69,15 @@ public class JsonActions {
         }
 
     
-        objectMapper.writeValue(new File("src/main/resources/static/data.json"), newPosts);
+        objectMapper.writeValue(jsonFile, newPosts);
         return newPosts;
+    }
+
+    public static Post[] loadPosts() throws IOException
+    {
+        Post[] posts = objectMapper.readValue(jsonFile, Post[].class);
+    
+        return posts;
     }
 
 }

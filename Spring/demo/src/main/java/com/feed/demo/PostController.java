@@ -39,5 +39,9 @@ public class PostController {
       return JsonActions.delPost(id);
   }
 
-
+  @GetMapping("/loadPosts")
+  public com.feed.demo.Post[] LoadPost() throws IOException 
+  {
+      return JsonActions.loadPosts();
+  }
 }

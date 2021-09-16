@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <link rel="manifest" href="js/manifest.json">
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"> -->
+  <meta name="HandheldFriendly" content="true" />
+  <link rel="stylesheet" href="style/style.css">
+  <title>Webions</title>
+</head>
+<body>
+  <div class="links"
+  style="
+    position:fixed;
+    top:0;
+    left:0;
+    background-color:#fff;
+    display:none;
+    ">
+    <a href="#" onclick="serv.getServInfo()">UPDATE</a>
+    <a href="#" onclick="serv.stop()">CLR_INTV</a>
+    <a href="#" onclick="serv.start(gamePlane.fps)">STRT_INTV</a>
+  </div>
+  <!-- <canvas class="mobileControl leftBar"></canvas> -->
+  <div class="mobileControls leftPanel">TARGET</div>
+  <div class="mobileControls rightPanel"></div>
+  <canvas class="gamePlane"></canvas>
+  <!-- <canvas class="mobileControl rightBar"></canvas> -->
+  <script src="js/components.js?id=4"></script>
+  <script src="js/functions.js"></script>
+  <script src="js/mapcontroller.js"></script>
+  <script src="js/sprites.js"></script>
+  <script src="js/mobilecontrols.js"></script>
+  <script>
+    var player;
+    var dragon;
+    var inGameConsole;
+    gamePlane = {
+      fps :5,
+      sprites: [],
+      players:[],
+      canvas : document.querySelector(".gamePlane"),
+      init () {
+        this.canvas.width = 440;
+        this.canvas.height = this.canvas.width;
+        this.frameNo = 0;
+        this.context = this.canvas.getContext("2d");
+        player = new Player("Name","citizen",200,200);
+        dragon = new Character("King Dragon I","black_dragon",[1,7,1]);
+        hitText = [];
+        inGameConsole = new Text();
+        //this.interval = setInterval(this.updategamePlane, 1000/gamePlane.fps);
+      },
+      clear() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      },
+      loadSprites(callback) {
+        console.log("Load sprites.");
+        for(s of sprites){
+          this.sprites[s.name] = document.createElement("img");
+          this.sprites[s.name].src = s.src;
+        }
+        callback();
+      },
+      updategamePlane() {
+        gamePlane.clear();
+        if(gamePlane.key && !player.walking){
+          player.controls(gamePlane.key);
+        }
+        if(!dragon.walking){
+          dragon.changePosition();          
+        }
+        gamePlane.frameNo++;
+        map.update();
+        map.draw(-1);
+        map.draw(0);
+        dragon.update();
+        //player.update();
+        // console.log(this.players);
+        for(p of this.players){
+          // console.log(p);
+          p.update();
+          p.draw();
+        }
+        map.draw(1);
+        dragon.draw();
+        inGameConsole.update();
+      //console.log("interval");
+      },
+      stop(){
+        clearInterval(this.interval);
+        console.log("Game stopped.")
+      }
+    }
+    // load ;>
+    gamePlane.loadSprites(()=>{
+      console.log("Loaded.")
+      map.generate(()=>{
+        console.log("Generated.")
+        gamePlane.init();
+      })
+    })
+    setResolution();
+    window.onresize = () =>{
+    setResolution();  
+  }
+  </script>
+  <script>
+    let serv = {
+      controls:[],
+      intervaling:false,
+      init(){
+        serv.getServInfo();
+        // Keyboard controls:
+        window.addEventListener('keydown', function (e) {
+          // check if keyCode is in arr
+          let isNot = true;
+          for(c of serv.controls){
+            if(c == e.keyCode){isNot = false;}
+          }
+          // if is Not, then push it
+          if(isNot){serv.controls.push(e.keyCode);}
+        })
+        window.addEventListener('keyup', function (e) {
+          serv.controls = serv.controls.filter((rmv)=>{return rmv != e.keyCode});
+        })
+        
+        // Mobile controls
+        window.addEventListener('touchstart',function (e){
+          // check if keyCode is in arr
+          let isNot = true;
+          for(c of serv.controls){
+            if(c == e.target.dataset.keyCode){isNot = false;}
+          }
+          // if is Not, then push it
+          if(isNot){serv.controls.push(e.target.dataset.keyCode);}
+          //console.log(serv.controls);
+        })
+        window.addEventListener('touchend', function (e) {
+          serv.controls = serv.controls.filter((rmv)=>{return rmv != e.target.dataset.keyCode});
+        })
+        
+      },
+      start(fps){
+        console.log("FPS:"+gamePlane.fps);
+        serv.interval = setInterval(()=>{
+          this.intervaling = true;
+          serv.getServInfo();
+        },1000/fps)
+      },
+      stop(){
+        clearInterval(serv.interval);
+        this.intervaling = false;
+      },
+      getServInfo(){
+        controlsURI = serv.controls.join(',');
+        playerFetch = playerFetch.toLowerCase();
+        fetch("/playerPosition?playerName="+playerFetch+"&controls="+controlsURI)
+        .then((dt) => dt.json()).then((data) => {
+          let players = data.players;
+          gamePlane.fps = data.fps;
+          let thisCyle = 0;
+          //console.log(players)
+          for(p of players){
+            if(p.name.toLowerCase() == playerFetch){
+              player.position = equalArr(p.position);
+              player.direction = p.direction;
+              player.sprite = p.sprite;
+              player.speed = p.speed;
+              player.cyle = p.cyle;
+              inGameConsole.text = p.console;
+              //console.log(p.cyle);
+              // if(p.pEF > p.frameNo){
+              //   player.walkAnim();
+              // }
+              // player.draw();
+            }else{
+              let isPlayerOnline = false;
+              for(g of gamePlane.players){
+                if(g.name.toLowerCase() == p.name.toLowerCase()){
+                  //console.log(g)
+                  g.position = equalArr(p.position);
+                  g.direction = p.direction;
+                  g.sprite = p.sprite;
+                  g.speed = p.speed;
+                  g.cyle = p.cyle;
+                  isPlayerOnline = true;
+                }
+              }
+              if(!isPlayerOnline){
+                // // add player to gameplane.players array
+                gamePlane.players.push(new Character(p.name,"citizen",p.position));
+              }
+            }
+
+          }
+          gamePlane.updategamePlane();
+          if(!serv.intervaling){serv.start(data.fps)} 
+        }).catch((err)=>{console.log(err);})
+      }
+    }
+    let playerFetch = window.location.search.split("=")[1];
+    if(typeof playerFetch == "undefined"){
+      // create field of login (i'm doing this drunk)
+      let container = document.createElement("div");
+      let form = document.createElement("form");
+      let input = document.createElement("input");
+      let submit = document.createElement("input");
+
+      container.className = "container";
+      input.name = "player";
+      input.placeholder = "Twój nick";
+      submit.value = "Dołącz do gry";
+      submit.type = "submit";
+      form.action = "/";
+      form.method = "get"
+
+      form.append(input);
+      form.append(submit);
+      container.append(form);
+      document.body.append(container);
+
+    }else{
+      gamePlane.players.push(new Player(playerFetch,player.sprite,200,200));
+      serv.init();
+    }
+  </script>
+</body>
+</html>

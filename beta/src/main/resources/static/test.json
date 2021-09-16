@@ -1,0 +1,51 @@
+{
+  "fps": 15,
+  "frameNo": 862,
+  "players": [
+    {
+      "name": "tosiak",
+      "cyle": "0",
+      "console": "You are exhousted.",
+      "frameNo": "835",
+      "direction": "1",
+      "sprite": "citizen",
+      "speed": "1.0",
+      "pEF": "0",
+      "position": [
+        -0.5,
+        9.5,
+        0.0
+      ]
+    },
+    {
+      "name": "Tosiak",
+      "cyle": "1",
+      "console": "You are exhousted.",
+      "frameNo": "10",
+      "direction": "3",
+      "sprite": "citizen",
+      "speed": "1.0",
+      "pEF": "15",
+      "position": [
+        14.9,
+        2.0,
+        0.0
+      ]
+    },
+    {
+      "name": "test",
+      "cyle": "1",
+      "console": "",
+      "frameNo": "15",
+      "direction": "3",
+      "sprite": "citizen",
+      "speed": "1.0",
+      "pEF": "30",
+      "position": [
+        14.4,
+        2.0,
+        0.0
+      ]
+    }
+  ]
+}
