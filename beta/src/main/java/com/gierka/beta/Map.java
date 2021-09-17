@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 
+import ch.qos.logback.core.joran.conditional.ElseAction;
+
 
 
 public class Map {
@@ -69,30 +71,27 @@ public class Map {
    
     }
 
-    public String checkGrids(int x,int y,int z,String nazwaPola,int newX,int newY, int newZ)
+    public String checkGrids(int x,int y,int z)
     {
-
-        for(Grid g: grids)
+        String result = "false,0,0,0";
+        for(Grid g: this.grids)
         {
             if(g.x ==x && g.y==y && g.z==z)
             {
-                
-                System.out.println("Pole istnieje");
-                return "true";
-            }
-            else if(nazwaPola=="stairs")
-            {
-                System.out.println("Jest to pole Stairs");
-
-                return newX+","+newY+","+newZ;
-            }
-            else
-            {
-                System.out.println("Pole nie istnieje, jest to pole black a wartośc tego pola to "+ x+" " +y+" "+z);
-                return null;
+                if(g.type.equals("stairs"))
+                {
+                    result="stairs,"+g.newX+","+g.newY+","+g.newZ;
+                    break;
+                }
+                else
+                {
+                    result="floor,";
+                    break;
+                }
+               
             }
         }
-        return null;
+        return result;
     }
 
 

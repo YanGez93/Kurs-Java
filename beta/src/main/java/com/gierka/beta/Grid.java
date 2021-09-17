@@ -1,6 +1,6 @@
 package com.gierka.beta;
 public class Grid {
-    String value;
+    String value,type;
     
 
     /*
@@ -13,6 +13,7 @@ public class Grid {
     int texture,x,y,z,tx,ty,tz;
     int newX,newY,newZ;
 
+
     public void makeGrid(
         int texture,
         int x,
@@ -24,6 +25,7 @@ public class Grid {
         this.x=x;
         this.y=y;
         this.z=z;
+        this.type = "floor";
 
     }
 
@@ -41,6 +43,7 @@ public class Grid {
         this.x=x;
         this.y=y;
         this.z=z;
+        this.type = "stairs";
 
         this.newX=newX;
         this.newY=newY;
