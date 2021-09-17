@@ -42,10 +42,13 @@ public class Map {
         for(int i=0;i<strTable.length;i++)
         {
             Grid gridToAdd = new Grid();
-            if(strTable[i].length()==4)
+            if(strTable[i].length()==9)
             {
-                gridToAdd.makeGrid(Integer.parseInt(strTable[i]),Integer.parseInt(strTable[i]),Integer.parseInt(strTable[i]),Integer.parseInt(strTable[i]));
+                String[] strTable2= strTable[i].split(",");
+                
+                gridToAdd.makeGrid(Integer.parseInt(strTable2[0]),Integer.parseInt(strTable2[1]),Integer.parseInt(strTable2[2]),Integer.parseInt(strTable2[3]));
                 grids.add(gridToAdd);
+                System.err.println(gridToAdd.texture+gridToAdd.x+gridToAdd.y+gridToAdd.z);
             }
             else if(strTable[i].length()==7)
             {
