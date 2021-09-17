@@ -70,4 +70,12 @@ public class Controller {
 
         return result;
     }
+
+    @GetMapping("/test")
+    public int test()
+    {
+        String x="1,2,3,4";
+
+        return x.length();
+    }
 }

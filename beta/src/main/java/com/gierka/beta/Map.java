@@ -5,24 +5,25 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+
 
 public class Map {
 
-    static ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
     static File jsonFile = new File("src/main/resources/static/json/map.json");
+    private ArrayList<Grid> grids;
 
-    public Map() 
+    public Map()
     {
 
-    
-       
+        try {
+            this.load();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+         
     }
 
-    public void load()throws JsonParseException, JsonMappingException, IOException
+    public void load()throws IOException
     {
         String str = new String(Files.readAllBytes(jsonFile.toPath()));
 
@@ -34,53 +35,65 @@ public class Map {
 
         String[] strTable=str.split("],\\[");
 
-        ArrayList<Grid> grids = new ArrayList<Grid>();   
+        this.grids = new ArrayList<Grid>();   
         
 
         for(int i=0;i<strTable.length;i++)
         {
             Grid gridToAdd = new Grid();
             String[] singleField = strTable[i].split(",");
-          //  System.out.println(strTable[i]);
-
+  
             
-            if(strTable[i].length()==8)
+            if(singleField.length==4)
             {
-                
                 gridToAdd.makeGrid(Integer.parseInt(singleField[0]),Integer.parseInt(singleField[1]),Integer.parseInt(singleField[2]),Integer.parseInt(singleField[3]));
-                grids.add(gridToAdd);
-                System.out.println(gridToAdd.texture+gridToAdd.x+gridToAdd.y+gridToAdd.z);
-                System.out.println(strTable[i]);
+                //System.out.println("Grid zwykły");
             }
-            else if(strTable[i].length()==15)
+            else
             {
-                
-                gridToAdd.makeGrid(Integer.parseInt(singleField[0]),Integer.parseInt(singleField[1]),Integer.parseInt(singleField[2]),Integer.parseInt(singleField[3]));
-                grids.add(gridToAdd);
-                System.out.println(gridToAdd.texture+gridToAdd.x+gridToAdd.y+gridToAdd.z);
-                System.out.println(strTable[i]);
+                gridToAdd.makeGrid(Integer.parseInt(singleField[0]),Integer.parseInt(singleField[1]),
+                Integer.parseInt(singleField[2]),Integer.parseInt(singleField[3]),
+                Integer.parseInt(singleField[5]),Integer.parseInt(singleField[6]),
+                Integer.parseInt(singleField[7]));
+
+                //System.out.println("Grid stairs");
+
             }
+            grids.add(gridToAdd);
 
-            /*
-            if(strTable[i].length()==9)
-            {
-                
-                
-                gridToAdd.makeGrid(Integer.parseInt(strTable2[0]),Integer.parseInt(strTable2[1]),Integer.parseInt(strTable2[2]),Integer.parseInt(strTable2[3]));
-                grids.add(gridToAdd);
-                System.err.println(gridToAdd.texture+gridToAdd.x+gridToAdd.y+gridToAdd.z);
-            }
-            else if(strTable[i].length()==7)
-            {
-
-            }   
-
-            */
+         
+            //System.out.println(strTable[i]);
+            
 
         }
-       
-       // grids.add(e);
-
-        //System.err.println(str);
+   
     }
+
+    public String checkGrids(int x,int y,int z,String nazwaPola,int newX,int newY, int newZ)
+    {
+
+        for(Grid g: grids)
+        {
+            if(g.x ==x && g.y==y && g.z==z)
+            {
+                
+                System.out.println("Pole istnieje");
+                return "true";
+            }
+            else if(nazwaPola=="stairs")
+            {
+                System.out.println("Jest to pole Stairs");
+
+                return newX+","+newY+","+newZ;
+            }
+            else
+            {
+                System.out.println("Pole nie istnieje, jest to pole black a wartośc tego pola to "+ x+" " +y+" "+z);
+                return null;
+            }
+        }
+        return null;
+    }
+
+
 }

@@ -1,8 +1,13 @@
 package com.gierka.beta;
+
+import ch.qos.logback.core.joran.conditional.ElseAction;
+
 public class Player {
 
     String name;
     int x,y,direction,cyle;
+
+    Map map = new Map();
 
     public Player(String playerName)
     {
@@ -34,28 +39,56 @@ public class Player {
             this.cyle=0;
         }
 
+        int x = this.x;
+        int y = this.y;
+
         switch(controls)
         {
             case "87":
-                this.y-=1f;
+                y-=1;
                 this.direction=0;
                 break;
             case "83":
-                this.y+=1f;
+                y+=1;
                 this.direction=1;
                 break;
             case "65": 
-                this.x-=1f;
+                x-=1;
                 this.direction=3;       
                 break;
             case "68":  
-                this.x+=1f;
+                x+=1;
                 this.direction=2;
                 break;
             default:
                 break;
+        }
+
+
+        boolean canMove=true;
+
+
+        String checkValue = map.checkGrids(x, y, 0, null, 0, 0, 0);
+
+        if(checkValue=="Pole istnieje")
+        {
+            canMove=true;
+        }
+        else if(checkValue=="stairs")
+        {
+            canMove=false;
+        }
+        
+
+        if(canMove)
+        {
+            this.x=x;
+            this.y=y;
 
         }
+        
+
+       
     
     }
 
