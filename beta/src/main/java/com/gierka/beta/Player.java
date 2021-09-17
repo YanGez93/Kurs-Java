@@ -10,6 +10,7 @@ public class Player {
         this.x = 0;
         this.y = 0;
         this.direction=0;
+        this.cyle=0;
 
     }
 
@@ -21,14 +22,11 @@ public class Player {
             {
                 this.cyle++;
             }
-            if(this.cyle==2)
+            else if(this.cyle==2)
             {
                 this.cyle=1;
             }
-            else
-            {
-                this.cyle=0;
-            }
+            
             
         }
         else

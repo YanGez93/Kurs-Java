@@ -1,6 +1,10 @@
 package com.gierka.beta;
 
+import java.io.IOException;
 import java.util.ArrayList;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -8,13 +12,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class Controller {
 
-
+    Map map = new Map();
+    
     ArrayList<Player> creatures = new ArrayList<Player>();
 
     @GetMapping("/playerPosition")
-    public String getInfo(String playerName,String controls)
+    public String getInfo(String playerName,String controls) throws JsonParseException, JsonMappingException, IOException
     {
         System.out.println(controls);
+        
+        map.load();
+
         
         //Make player or get him
         boolean isPlayer = false;
